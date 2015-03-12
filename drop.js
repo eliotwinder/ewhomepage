@@ -8,16 +8,32 @@ void setup() {
 }
 
 var faceX = 0;
-var faceY = 0;
+var faceY = 150;
 var faceSize = 0;
 var animateDropCalled = false;
+
+function simulAnimate( action1, parameters1, action2, parameters2 ){
+	var args = arguments;
+	setTimeout(function() {
+		if (faceX < 200) {	
+			action1.apply(this, parameters1);
+			action2.apply(this, parameters2);
+		} else if (faceSize < 179) {
+			action2.apply(this, parameters2);
+		} else {
+			return;
+		}
+		simulAnimate.apply(this, args);
+	},
+	50);
+}
+
 
 function orderAnimate( action1, parameters1, action2, parameters2 ){
 	var args = arguments;
 	setTimeout(function() {
-		if (faceX < 400) {	
+		if (faceX < 200) {	
 			action1.apply(this, parameters1);
-			action2.apply(this, parameters2);
 		} else if (faceSize < 179) {
 			action2.apply(this, parameters2);
 		} else {
@@ -93,7 +109,7 @@ void draw(){
 	line (faceX+eyeOffset-eyeWidth/2,faceY-6,faceX+eyeOffset+eyeWidth/2,faceY-6);
 	
 	if (!animateDropCalled)	{
-		orderAnimate(moveDrop, [10,0], shrinkDrop, [4]);	
+		simulAnimate(moveDrop, [10,0], shrinkDrop, [4]);	
 	}
 
 	animateDropCalled = true;
