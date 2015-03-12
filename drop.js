@@ -29,7 +29,35 @@ function simulAnimate( action1, parameters1, action2, parameters2 ){
 }
 
 
-function orderAnimate( action1, parameters1, action2, parameters2 ){
+var animate1 = {
+	action: moveDrop,
+	parameters: [10,0],
+}
+
+var animate2 = {
+	action: shrinkDrop,
+	parameters: 4
+}
+
+function orderAnimate( action1, parameters1, test1, action2, parameters2, test2 ){
+	var args = arguments;
+	console.log(test1);
+	setTimeout(function() {
+		if (test1()) {	
+			action1.apply(this, parameters1);
+		} else if (test2()) {
+			action2.apply(this, parameters2);
+		} else {
+			return;
+		}
+		orderAnimate.apply(this, args);
+	},
+	50);
+}
+
+var arrayOfActions = [animate1, animate2];
+
+function orderAnimateArray( array ){
 	var args = arguments;
 	setTimeout(function() {
 		if (faceX < 200) {	
@@ -43,6 +71,8 @@ function orderAnimate( action1, parameters1, action2, parameters2 ){
 	},
 	50);
 }
+
+
 	
 function shrinkDrop (x) {
 	if (faceSize === 0) {
@@ -109,7 +139,7 @@ void draw(){
 	line (faceX+eyeOffset-eyeWidth/2,faceY-6,faceX+eyeOffset+eyeWidth/2,faceY-6);
 	
 	if (!animateDropCalled)	{
-		simulAnimate(moveDrop, [10,0], shrinkDrop, [4]);	
+		orderAnimate(moveDrop, [10,0], function () { return faceX < 200}, shrinkDrop, [4],function() {return faceSize < 179});	
 	}
 
 	animateDropCalled = true;
