@@ -9,7 +9,7 @@ void setup() {
 
 var faceX = 0;
 var faceY = 150;
-var faceSize = 0;
+var faceSize = 100;
 var animateDropCalled = false;
 
 function simulAnimate( action1, parameters1, action2, parameters2 ){
@@ -32,16 +32,32 @@ function simulAnimate( action1, parameters1, action2, parameters2 ){
 var animate1 = {
 	action: moveDrop,
 	parameters: [10,0],
+	endTest: function() { return faceX < 200}
 }
 
 var animate2 = {
 	action: shrinkDrop,
-	parameters: 4
+	parameters: [4],
+	endTest: function() { return faceSize < 179}
 }
+
+
+function animate( action, parameters, test1) {
+	var args = arguments;
+	setTimeout(function() {
+		if (test1()) {	
+			action1.apply(this, parameters1);
+		} else {
+			return;
+		}
+		nimate.apply(this, args);
+	},
+	50);
+}
+
 
 function orderAnimate( action1, parameters1, test1, action2, parameters2, test2 ){
 	var args = arguments;
-	console.log(test1);
 	setTimeout(function() {
 		if (test1()) {	
 			action1.apply(this, parameters1);
@@ -57,20 +73,25 @@ function orderAnimate( action1, parameters1, test1, action2, parameters2, test2 
 
 var arrayOfActions = [animate1, animate2];
 
-function orderAnimateArray( array ){
+var counter = 0;
+
+function orderAnimateArray( arr ){
 	var args = arguments;
 	setTimeout(function() {
-		if (faceX < 200) {	
-			action1.apply(this, parameters1);
-		} else if (faceSize < 179) {
-			action2.apply(this, parameters2);
-		} else {
-			return;
-		}
-		orderAnimate.apply(this, args);
-	},
+				if (arr[counter].endTest()) {
+					arr[counter].action.apply(this, arr[counter].parameters);
+				} else {
+					counter++;
+				}
+				if (counter === arr.length) {
+					return;
+				}
+			orderAnimateArray.apply(this, args);
+			}
+	,
 	50);
 }
+
 
 
 	
@@ -139,7 +160,8 @@ void draw(){
 	line (faceX+eyeOffset-eyeWidth/2,faceY-6,faceX+eyeOffset+eyeWidth/2,faceY-6);
 	
 	if (!animateDropCalled)	{
-		orderAnimate(moveDrop, [10,0], function () { return faceX < 200}, shrinkDrop, [4],function() {return faceSize < 179});	
+		// order animate function with direct arguments orderAnimate(moveDrop, [10,0], function() { return faceX < 200}, shrinkDrop, [4],function() {return faceSize < 179});	
+		orderAnimateArray(arrayOfActions);
 	}
 
 	animateDropCalled = true;
