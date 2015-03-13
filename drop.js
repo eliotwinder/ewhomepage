@@ -29,8 +29,9 @@ function simulAnimate( action1, parameters1, action2, parameters2 ){
 }
 
 
+
 var animate1 = {
-	action: moveDrop,
+	action: simulAnimateInArray,
 	parameters: [10,0],
 	endTest: function() { return faceX < 200}
 }
@@ -39,6 +40,12 @@ var animate2 = {
 	action: shrinkDrop,
 	parameters: [4],
 	endTest: function() { return faceSize < 179}
+}
+
+var animate3 = {
+	action: simulAnimateInArray, 
+	parameters: [moveDrop, [-10,-5], shrinkDrop, [10]],
+	endTest: function() { return faceX > 100}
 }
 
 
@@ -51,6 +58,17 @@ function animate( action, parameters, test1) {
 			return;
 		}
 		nimate.apply(this, args);
+	},
+	50);
+}
+
+function simulAnimateInArray(action1, parameters1, action2, parameters2) {
+	var args = arguments;
+	console.log('hello');
+	console.log(faceSize);
+	setTimeout(function() {	
+		action1.apply(this, parameters1);
+		action2.apply(this, parameters2);
 	},
 	50);
 }
@@ -71,7 +89,7 @@ function orderAnimate( action1, parameters1, test1, action2, parameters2, test2 
 	50);
 }
 
-var arrayOfActions = [animate1, animate2];
+var arrayOfActions = [animate1, animate2, animate3];
 
 var counter = 0;
 
