@@ -127,7 +127,7 @@ void draw(){
 	var eyeOffset = faceSize*0.2;
 	var eyeWidth = faceSize*0.34;
 	var eyeOpenness = faceSize*0.3;
-	var pupilSize = 0.5;
+	var pupilSize = 0.5*eyewidth;
 	var pupilLook = faceX * .04;
 	
 	background(221,160,221);
