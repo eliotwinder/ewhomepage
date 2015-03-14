@@ -1,3 +1,4 @@
+//setup canvas
 void setup() {
 	size(400,375);
 	fill(255);
@@ -7,73 +8,16 @@ void setup() {
 	frameRate(60);
 }
 
+//global variables
 var faceX = 0;
 var faceY = 150;
-var faceSize = 100;
+var faceSize = 25;
 var animateDropCalled = false;
 
-function simulAnimate( action1, parameters1, action2, parameters2 ){
-	var args = arguments;
-	setTimeout(function() {
-		if (faceX < 200) {	
-			action1.apply(this, parameters1);
-			action2.apply(this, parameters2);
-		} else if (faceSize < 179) {
-			action2.apply(this, parameters2);
-		} else {
-			return;
-		}
-		simulAnimate.apply(this, args);
-	},
-	50);
-}
+//ANIMATE FUNCTIONS
 
 
-
-var animate1 = {
-	action: simulAnimateInArray,
-	parameters: [10,0],
-	endTest: function() { return faceX < 200}
-}
-
-var animate2 = {
-	action: shrinkDrop,
-	parameters: [4],
-	endTest: function() { return faceSize < 179}
-}
-
-var animate3 = {
-	action: simulAnimateInArray, 
-	parameters: [moveDrop, [-10,-5], shrinkDrop, [10]],
-	endTest: function() { return faceX > 100}
-}
-
-
-function animate( action, parameters, test1) {
-	var args = arguments;
-	setTimeout(function() {
-		if (test1()) {	
-			action1.apply(this, parameters1);
-		} else {
-			return;
-		}
-		nimate.apply(this, args);
-	},
-	50);
-}
-
-function simulAnimateInArray(action1, parameters1, action2, parameters2) {
-	var args = arguments;
-	console.log('hello');
-	console.log(faceSize);
-	setTimeout(function() {	
-		action1.apply(this, parameters1);
-		action2.apply(this, parameters2);
-	},
-	50);
-}
-
-
+//two sequential animations
 function orderAnimate( action1, parameters1, test1, action2, parameters2, test2 ){
 	var args = arguments;
 	setTimeout(function() {
@@ -87,6 +31,51 @@ function orderAnimate( action1, parameters1, test1, action2, parameters2, test2 
 		orderAnimate.apply(this, args);
 	},
 	50);
+}
+//two animations at the same time - test1 and test2 need to be functions that return boolean
+function simulAnimate( action1, parameters1, test1, action2, parameters2, test2 ){
+	var args = arguments;
+	setTimeout(function() {
+		if (test1) {	
+			action1.apply(this, parameters1);
+			action2.apply(this, parameters2);
+		} else if (test2) {
+			action2.apply(this, parameters2);
+		} else {
+			return;
+		}
+		simulAnimate.apply(this, args);
+	},
+	50);
+}
+
+//modified simulAnimate to be used in orderAnimateArray function
+function simulAnimateInArray(action1, parameters1, action2, parameters2) {
+	var args = arguments;
+	setTimeout(function() {	
+		action1.apply(this, parameters1);
+		action2.apply(this, parameters2);
+	},
+	50);
+}
+
+//animation objects for testing
+var animate1 = {
+	action: simulAnimateInArray,
+	parameters: [moveDrop, [10,0], shrinkDrop,[8]],
+	endTest: function() { return faceX < 200}
+}
+
+var animate2 = {
+	action: shrinkDrop,
+	parameters: [4],
+	endTest: function() { return faceSize < 179}
+}
+
+var animate3 = {
+	action: simulAnimateInArray, 
+	parameters: [moveDrop, [-10,-8], shrinkDrop, [10]],
+	endTest: function() { return faceX > 75}
 }
 
 var arrayOfActions = [animate1, animate2, animate3];
@@ -139,7 +128,7 @@ void draw(){
 	var eyeWidth = faceSize*0.34;
 	var eyeOpenness = faceSize*0.3;
 	var pupilSize = 0.5;
-	var pupilLook = 8;
+	var pupilLook = faceX * .04;
 	
 	background(221,160,221);
 
@@ -152,7 +141,7 @@ void draw(){
 	ellipse(faceX-earOffset, faceY-(faceSize/4), earSize, earSize); // left ear
 	ellipse(faceX+earOffset, faceY-(faceSize/4), earSize, earSize); // right ear
 
-	rect(faceX - (trunkWidth/2),faceY-5,trunkWidth,trunkLength);//trunk
+	rect(faceX - (trunkWidth/2),faceY-(faceSize/12),trunkWidth,trunkLength);//trunk
 	rect(faceX - (nozzleWidth/2),faceY+trunkLength/1.1,nozzleWidth,trunkLength/6,50);//nozzle
 
 	//eyes
