@@ -13,6 +13,10 @@ var faceX = 0;
 var faceY = 150;
 var faceSize = 25;
 var animateDropCalled = false;
+var mx = 0;
+var my = 0;
+var easing = .05;
+
 
 //ANIMATE FUNCTIONS
 
@@ -78,7 +82,7 @@ var animate3 = {
 	endTest: function() { return faceX > 75}
 }
 
-var arrayOfActions = [animate1, animate2, animate3];
+var arrayOfActions = [animate1, animate2];
 
 var counter = 0;
 
@@ -98,9 +102,6 @@ function orderAnimateArray( arr ){
 	,
 	50);
 }
-
-
-
 	
 function shrinkDrop (x) {
 	if (faceSize === 0) {
@@ -116,6 +117,7 @@ function moveDrop(x,y) {
 }
 
 void draw(){
+	//drop variables
 	var earHeight = faceY-(faceSize/4);
 	var earOffset = faceSize/1.66;
 	var earSize = faceSize/1.20;
@@ -127,8 +129,8 @@ void draw(){
 	var eyeOffset = faceSize*0.2;
 	var eyeWidth = faceSize*0.34;
 	var eyeOpenness = faceSize*0.3;
-	var pupilSize = 0.5*eyewidth;
-	var pupilLook = faceX * .04;
+	var pupilSize = 0.5*eyeWidth;
+	var pupilLook = 0;
 	
 	background(221,160,221);
 
@@ -153,8 +155,8 @@ void draw(){
 	fill(41, 7, 41);
 	
 	//pupils
-	ellipse(pupilLook+eyeOffset+faceX,faceY,pupilSize*eyeWidth, pupilSize*eyeOpenness);
-	ellipse(pupilLook-eyeOffset+faceX,faceY,pupilSize*eyeWidth, pupilSize*eyeOpenness);
+	ellipse(pupilLook+eyeOffset+faceX+mx,faceY+my,pupilSize, pupilSize);
+	ellipse(pupilLook-eyeOffset+faceX+mx,faceY+my,pupilSize, pupilSize);
 
 	fill(145, 145, 145);
 
@@ -166,6 +168,24 @@ void draw(){
 	line (faceX-eyeOffset-eyeWidth/2,faceY-6,faceX-eyeOffset+eyeWidth/2,faceY-6);
 	line (faceX+eyeOffset-eyeWidth/2,faceY-6,faceX+eyeOffset+eyeWidth/2,faceY-6);
 	
+	//eyes follow the mouse - mousePosX is -200 to make 0 the center of the canvas
+	var mousePosX = mouseX - 200; 
+	var mousePosY = mouseY - 187.5;
+	if (abs(mouseX - mx) > 0.1) {
+		mx = mx + (mousePosX - mx) * easing;
+	}
+
+	if (abs(mouseY - my) > 0.1) {
+		my = my + (mousePosY - my) * easing;
+
+
+	mx = constrain(mx, - ((eyeWidth/2)-(pupilSize/2)), ((eyeWidth/2)-(pupilSize/2)));
+	my = constrain(my, - ((eyeWidth/2)-(pupilSize/2)), ((eyeWidth/2)-(pupilSize/2)));
+
+	
+	}
+
+	//check if animation is called - if it isn't, animate drop!
 	if (!animateDropCalled)	{
 		// order animate function with direct arguments orderAnimate(moveDrop, [10,0], function() { return faceX < 200}, shrinkDrop, [4],function() {return faceSize < 179});	
 		orderAnimateArray(arrayOfActions);
